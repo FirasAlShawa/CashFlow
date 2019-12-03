@@ -21,39 +21,38 @@ public class DB {
     private DatabaseReference userRef = database.getReference("Users");
     private DatabaseReference logRef = database.getReference("Log");
     private DatabaseReference CategoriesRef = database.getReference("Categories");
-    private User user = null;
+    private User CurrentUser = new User();
     private ArrayList<Category> categories = new ArrayList<>();
 
-    public DatabaseReference MainRef(){
+    public DatabaseReference MainRef() {
         return mainRef;
     }
 
-    public DatabaseReference UserRef(){
+    public DatabaseReference UserRef() {
         return userRef;
     }
 
-    public DatabaseReference LogRef(){
+    public DatabaseReference LogRef() {
         return logRef;
     }
 
-    public void initMain(){
+    public void initMain() {
         mainRef.orderByKey().limitToFirst(1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot != null){
-                    if(dataSnapshot.getChildrenCount() == 1){
-                        for(DataSnapshot snapshot : dataSnapshot.getChildren())
-                        {
+                if (dataSnapshot != null) {
+                    if (dataSnapshot.getChildrenCount() == 1) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Main main = snapshot.getValue(Main.class);
                             System.out.println("initMain() => " + main.getTotal());
                         }
-                    }else{
+                    } else {
                         System.out.println("initMain() => No Children !");
-                        Main main = new Main(mainRef.push().getKey(),0);
+                        Main main = new Main(mainRef.push().getKey(), 0);
                         mainRef.child(main.getKey()).setValue(main);
                         System.out.println("new Childrn has been added !");
                     }
-                }else{
+                } else {
                     System.out.println("initMain() => dataSnapshot equals null !");
                 }
             }
@@ -66,26 +65,25 @@ public class DB {
     }
 
     //User Functions
-    public String NewUser(String name){
-        User user = new User(userRef.push().getKey(),name,0,0,"");
+    public String NewUser(String name) {
+        User user = new User(userRef.push().getKey(), name, 0, 0, "");
         userRef.child(user.getKey()).setValue(user);
         return user.getKey();
     }
-    public User GetUser(String key, final Callback mCallback){
+    public void GetUser(String key, final Callback mCallback) {
         userRef.orderByKey().equalTo(key).limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
             User user = null;
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot != null){
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren())
-                    {
+                if (dataSnapshot != null) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         user = snapshot.getValue(User.class);
                         System.out.println(user);
                     }
                 }
 
-                if(user != null){
+                if (user != null) {
                     mCallback.onCallbackUser(user);
                 }
             }
@@ -95,24 +93,27 @@ public class DB {
 
             }
         });
-        return user;
     }
-
+    public User UpdateUser(String field,User user){
+        UserRef().child(user.getKey()).setValue(user);
+        CurrentUser = user;
+        return this.CurrentUser;
+    }
     //Categories Functions
-    public void AddCategory(String name){
-        Category category = new Category(name,CategoriesRef.push().getKey());
+    public void AddCategory(String name) {
+        Category category = new Category(name, CategoriesRef.push().getKey());
         CategoriesRef.child(category.getKey()).setValue(category);
     }
-    public void GetCategories(final Callback myCallback){
+    public void GetCategories(final Callback myCallback) {
         final ArrayList<Category> categoryArrayList = new ArrayList<>();
-        CategoriesRef.addListenerForSingleValueEvent( new ValueEventListener() {
+        CategoriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
             ArrayList<Category> arrayList = new ArrayList<>();
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot != null){
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                if (dataSnapshot != null) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         arrayList.add(snapshot.getValue(Category.class));
                     }
                 }
@@ -127,14 +128,5 @@ public class DB {
 
         });
     }
-
-
-//    private void AddCategoryArrayList(Category category){
-//        DB.categories.add(category);
-//        System.out.println("Size=>"+DB.categories.size());
-//    }
-//
-//    public ArrayList<Category> getCategoriesArrayList(){
-//        return DB.categories;
-//    }
 }
+

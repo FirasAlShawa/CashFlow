@@ -1,15 +1,18 @@
 package com.firasshawa.cashflow.Activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.firasshawa.cashflow.Adapters.CategoryAdapter;
@@ -28,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView CategoriesRC;
     TextView currentTv;
-    Button increaseBtn,resetBtn,supportBtn;
+    Button increaseBtn,editBtn,supportBtn;
 
     CategoryAdapter adapter;
 
@@ -41,16 +44,16 @@ public class MainActivity extends AppCompatActivity {
         CategoriesRC = findViewById(R.id.categoriesRC);
         currentTv = findViewById(R.id.currentTv);
         increaseBtn = findViewById(R.id.increaseBtn);
-        resetBtn = findViewById(R.id.resetBtn);
+        editBtn = findViewById(R.id.editBtn);
         supportBtn = findViewById(R.id.supportBtn);
 
 
         CategoryRC_Setup();
 
-        increaseBtn.setOnClickListener(new View.OnClickListener() {
+        editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println(CurrentUser);
+                EditCurrent();
             }
         });
     }
@@ -73,12 +76,46 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCallbackUser(User user) {
-//                currentTv.setText(user.getCurrent()+"");
 //                CurrentUser.setKey(user.getKey());
 //                CurrentUser.setName(user.getKey());
                 CurrentUser = user;
+                currentTv.setText(CurrentUser.getCurrent()+"");
+            }
+
+        });
+    }
+    public void UpdateUser(){
+        currentTv.setText(CurrentUser.getCurrent()+"");
+        System.out.println("User Should be Updated");
+    }
+
+    public void EditCurrent(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        final View view = getLayoutInflater().inflate(R.layout.edit_current_layout,null);
+        builder.setTitle("كم معك بالجزدان؟");
+        builder.setView(view);
+        builder.setPositiveButton("تمام", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+              EditText editValueEt = view.findViewById(R.id.editValueEt);
+
+              User EditUser = CurrentUser;
+
+              EditUser.setCurrent(Integer.parseInt(editValueEt.getText().toString().trim()));
+              EditUser.setOldCurrent(Integer.parseInt(currentTv.getText().toString().trim()));
+
+               CurrentUser = db.UpdateUser(EditUser.getKey(),EditUser);
+               UpdateUser();
             }
         });
+        builder.setNegativeButton("خلص بطلت", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+//                finish();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void CategoryRC_Setup(){
