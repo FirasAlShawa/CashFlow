@@ -1,20 +1,29 @@
 package com.firasshawa.cashflow.DataModels;
 
 public class Log {
+    public String key;
     public String user;
     public String time;
     public String date;
     public int oldCurrent;
+    public int newCurrent;
     public int value;
     public String category;
+    public String desc;
 
-    public Log(String user, String time, String date, int oldCurrent, int value, String category) {
+    public Log() {
+    }
+
+    public Log(String key, String user, String time, String date, int oldCurrent, int newCurrent, int value, String category, String desc) {
+        this.key = key;
         this.user = user;
         this.time = time;
         this.date = date;
         this.oldCurrent = oldCurrent;
+        this.newCurrent = newCurrent;
         this.value = value;
         this.category = category;
+        this.desc = desc;
     }
 
     public String getUser() {
@@ -65,15 +74,42 @@ public class Log {
         this.category = category;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public int getNewCurrent() {
+        return this.newCurrent;
+    }
+
+    public void setNewCurrent(int newCurrent) {
+        this.newCurrent = newCurrent;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
     @Override
     public String toString() {
         return "Log{" +
-                "user='" + user + '\'' +
+                "key='" + key + '\'' +
+                ", user='" + user + '\'' +
                 ", time='" + time + '\'' +
                 ", date='" + date + '\'' +
                 ", oldCurrent=" + oldCurrent +
+                ", newCurrent=" + newCurrent +
                 ", value=" + value +
                 ", category='" + category + '\'' +
+                ", desc='" + desc + '\'' +
                 '}';
     }
 }

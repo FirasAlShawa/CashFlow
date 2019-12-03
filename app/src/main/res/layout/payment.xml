@@ -28,13 +28,17 @@
         android:hint="القيمة"
     android:inputType="number" />
 
-<!--    <EditText-->
-<!--        android:id="@+id/descEt"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="139dp"-->
-<!--        android:ems="10"-->
-<!--        android:hint="تفاصيل"-->
-<!--        android:inputType="textMultiLine" />-->
+    <EditText
+        android:id="@+id/descEt"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="تفاصيل"
+        android:background="@drawable/rounded"
+        android:textColor="#fff"
+        android:textColorHint="#A8FFFFFF"
+        android:inputType="textMultiLine" />
 
     <Button
         android:id="@+id/payBtn"

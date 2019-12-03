@@ -2,6 +2,8 @@ package com.firasshawa.cashflow.Adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,18 +18,29 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firasshawa.cashflow.DataModels.Category;
+import com.firasshawa.cashflow.DataModels.Log;
+import com.firasshawa.cashflow.DataModels.User;
+import com.firasshawa.cashflow.Database.DB;
 import com.firasshawa.cashflow.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Viewholder> {
     Context context ;
     ArrayList<Category> categories;
+    User user;
 
-    public CategoryAdapter(Context context, ArrayList<Category> categories) {
+    Date date = new Date();
+    SimpleDateFormat formatDay = new SimpleDateFormat("yyyy-mm-dd");
+    SimpleDateFormat formatTime = new SimpleDateFormat("HH:MM:SS");
+    public CategoryAdapter(Context context, ArrayList<Category> categories, User user) {
         this.context = context;
         this.categories = categories;
+        this.user = user;
     }
 
     @NonNull
@@ -69,26 +82,46 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Viewho
         }
     }
 
-    public void ShowAlertDialog(String category){
+    public void ShowAlertDialog(final String category){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
+
         View view = inflater.inflate(R.layout.payment,null);
         TextView payCategoryTv = view.findViewById(R.id.payCategoryTv);
+
         Button payBtn = view.findViewById(R.id.payBtn);
         final EditText valueEt = view.findViewById(R.id.valueEt);
-//        EditText descEt = view.findViewById(R.id.descEt);
+        final EditText descEt =  view.findViewById(R.id.descEt);
+
         payCategoryTv.setText(category);
         builder.setView(view);
+
         final AlertDialog dialog = builder.create();
+
         payBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(valueEt.getText().toString().length() != 0) {
+
+                    Log log = new Log();
+                    log.setCategory(category);
+                    log.setDate(formatDay.format(new Date()));
+                    log.setTime(formatTime.format(new Date()));
+                    log.setOldCurrent(user.getCurrent());
+                    log.setUser(user.getName());
+                    log.setValue(Integer.parseInt(valueEt.getText().toString()));
+                    log.setNewCurrent(user.getCurrent() - Integer.parseInt(valueEt.getText().toString()));
+                    if(descEt.getText().toString().length() != 0)
+                        log.setDesc(descEt.getText().toString().trim());
+                    else
+                        log.setDesc("مافي تفاصيل...");
+
+                    new DB().AddLog(log,user);
+
                     Toast.makeText(context, "شكرا...تم تسجيل عملية الشراء!", Toast.LENGTH_SHORT).show();
                     dialog.cancel();
                 }else{
                     Toast.makeText(context, "ادخل قيمة الشراء... وشكرا!", Toast.LENGTH_SHORT).show();
-
                 }
             }
         });

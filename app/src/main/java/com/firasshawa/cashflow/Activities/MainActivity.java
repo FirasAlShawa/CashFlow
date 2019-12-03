@@ -17,8 +17,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.firasshawa.cashflow.Adapters.CategoryAdapter;
+import com.firasshawa.cashflow.Adapters.LogAdapter;
 import com.firasshawa.cashflow.Callback;
 import com.firasshawa.cashflow.DataModels.Category;
+import com.firasshawa.cashflow.DataModels.Log;
 import com.firasshawa.cashflow.DataModels.User;
 import com.firasshawa.cashflow.Database.*;
 import com.firasshawa.cashflow.R;
@@ -30,11 +32,12 @@ public class MainActivity extends AppCompatActivity {
     User CurrentUser = new User();
     String key;
 
-    RecyclerView CategoriesRC;
+    RecyclerView CategoriesRC,LogRC;
     TextView currentTv;
     Button increaseBtn,editBtn,supportBtn;
 
-    CategoryAdapter adapter;
+    CategoryAdapter categoryAdapter;
+    LogAdapter logAdapter;
 
     DB db = new DB();
     @Override
@@ -43,13 +46,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         CategoriesRC = findViewById(R.id.categoriesRC);
+        LogRC = findViewById(R.id.LogRC);
         currentTv = findViewById(R.id.currentTv);
         increaseBtn = findViewById(R.id.increaseBtn);
         editBtn = findViewById(R.id.editBtn);
         supportBtn = findViewById(R.id.supportBtn);
 
 
-        CategoryRC_Setup();
 
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,9 +86,16 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onCallbackLogs(ArrayList<Log> logs) {
+
+            }
+
+            @Override
             public void onCallbackUser(User user) {
                 CurrentUser = user;
                 currentTv.setText(CurrentUser.getCurrent()+"");
+                CategoryRC_Setup();
+                LogsRC_Setup();
             }
         });
     }
@@ -154,15 +164,20 @@ public class MainActivity extends AppCompatActivity {
             public void onCallbackCategories(ArrayList<Category> categories) {
                 //set the RecyclerView as horizontal list
                 LinearLayoutManager layoutManager
-                        = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
-                adapter = new CategoryAdapter(MainActivity.this,categories);
+                        = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, true);
+                categoryAdapter = new CategoryAdapter(MainActivity.this,categories,CurrentUser);
                 CategoriesRC.setLayoutManager(layoutManager);
-                CategoriesRC.setAdapter(adapter);
+                CategoriesRC.setAdapter(categoryAdapter);
             }
 
             @Override
             public void onCallbackUser(User user) {
                 System.out.println("this should not be printed !");
+            }
+
+            @Override
+            public void onCallbackLogs(ArrayList<Log> logs) {
+
             }
         });
     }
@@ -175,6 +190,29 @@ public class MainActivity extends AppCompatActivity {
         db.AddCategory("كوي");
         db.AddCategory("صدقه");
         db.AddCategory("بنزين");
+    }
+
+    public void LogsRC_Setup(){
+        new DB().GetLogs(new Callback() {
+            @Override
+            public void onCallbackCategories(ArrayList<Category> categories) {
+
+            }
+
+            @Override
+            public void onCallbackLogs(ArrayList<Log> logs) {
+                LinearLayoutManager layoutManager
+                        = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+                logAdapter = new LogAdapter(MainActivity.this,logs);
+                LogRC.setLayoutManager(layoutManager);
+                LogRC.setAdapter(logAdapter);
+            }
+
+            @Override
+            public void onCallbackUser(User user) {
+
+            }
+        });
     }
 }
 

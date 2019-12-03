@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.firasshawa.cashflow.Callback;
 import com.firasshawa.cashflow.DataModels.Category;
+import com.firasshawa.cashflow.DataModels.Log;
 import com.firasshawa.cashflow.DataModels.Main;
 import com.firasshawa.cashflow.DataModels.User;
 import com.google.firebase.database.DataSnapshot;
@@ -71,7 +72,7 @@ public class DB {
         return user.getKey();
     }
     public void GetUser(String key, final Callback mCallback) {
-        userRef.orderByKey().equalTo(key).limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
+        userRef.orderByKey().equalTo(key).limitToFirst(1).addValueEventListener(new ValueEventListener() {
             User user = null;
 
             @Override
@@ -127,6 +128,38 @@ public class DB {
 
             }
 
+        });
+    }
+
+    //Logs Functions
+    public void AddLog(Log log,User user){
+        user.setOldCurrent(user.getCurrent());
+        user.setCurrent(user.getCurrent() - log.value);
+
+        log.setKey(LogRef().push().getKey());
+        LogRef().child(log.getKey()).setValue(log);
+
+        UpdateUser(user);
+
+    }
+    public void GetLogs(final Callback myCallback){
+        final ArrayList<Log> logArrayList = new ArrayList<>();
+        LogRef().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot != null){
+                    logArrayList.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        logArrayList.add(snapshot.getValue(Log.class));
+                    }
+                }
+                myCallback.onCallbackLogs(logArrayList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
         });
     }
 }

@@ -18,6 +18,11 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.Viewholder> {
     Context context ;
     ArrayList<Log> logs;
 
+    public LogAdapter(Context context, ArrayList<Log> logs) {
+        this.context = context;
+        this.logs = logs;
+    }
+
     @NonNull
     @Override
     public Viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -30,14 +35,15 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.Viewholder> {
     @Override
     public void onBindViewHolder(@NonNull Viewholder holder, int position) {
         Log log = logs.get(position);
-
+        System.out.println(logs.get(position));
         holder.user.setText(log.user);
         holder.time.setText(log.time);
         holder.date.setText(log.date);
-        holder.oldCurrent.setText(log.oldCurrent);
-        holder.value.setText(log.value);
+        System.out.println(log.getNewCurrent());
+        holder.oldCurrent.setText(log.oldCurrent+" - "+log.value+"\n="+log.getNewCurrent());
+        holder.value.setText("-"+log.value);
         holder.category.setText(log.category);
-
+        holder.desc.setText(log.getDesc());
     }
 
     @Override
@@ -46,7 +52,7 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.Viewholder> {
     }
 
     public class Viewholder extends RecyclerView.ViewHolder{
-        TextView user,time,date,oldCurrent,value,category;
+        TextView user,time,date,oldCurrent,value,category,desc;
         public Viewholder(@NonNull View itemView) {
             super(itemView);
             user=itemView.findViewById(R.id.userTv);
@@ -55,6 +61,7 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.Viewholder> {
             oldCurrent=itemView.findViewById(R.id.oldCurrentTv);
             value=itemView.findViewById(R.id.valueTv);
             category=itemView.findViewById(R.id.categoryTv);
+            desc = itemView.findViewById(R.id.descTv);
         }
     }
 }
