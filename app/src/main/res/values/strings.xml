@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CashFlow</string>
+    <string name="StartToken">StartToken</string>
+    <string name="UserKeyToken">UserKeyToken</string>
+</resources>

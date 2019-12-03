@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1036054446745",
+    "firebase_url": "https://cashflow-ef21e.firebaseio.com",
+    "project_id": "cashflow-ef21e",
+    "storage_bucket": "cashflow-ef21e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036054446745:android:df7707804b823b5f502e08",
+        "android_client_info": {
+          "package_name": "com.firasshawa.cashflow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1036054446745-t8dbk2f2fc36agji1bfe69qu20k4h3r4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.firasshawa.cashflow",
+            "certificate_hash": "d73bb02d91912203dd13365458eee0a2a53fcd51"
+          }
+        },
+        {
+          "client_id": "1036054446745-1l668c2333jbrbpsn45s4bggqrahc0fb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzEZUMlyxPFThDuhdMODaqn80okBV-2DU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1036054446745-1l668c2333jbrbpsn45s4bggqrahc0fb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
