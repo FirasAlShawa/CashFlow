@@ -94,11 +94,12 @@ public class DB {
             }
         });
     }
-    public User UpdateUser(String field,User user){
+    public User UpdateUser(User user){
         UserRef().child(user.getKey()).setValue(user);
         CurrentUser = user;
         return this.CurrentUser;
     }
+
     //Categories Functions
     public void AddCategory(String name) {
         Category category = new Category(name, CategoriesRef.push().getKey());

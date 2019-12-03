@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -64,10 +65,17 @@ public class MainActivity extends AppCompatActivity {
         GetUser();
     }
 
-
+    //get the user object from the DB
+    //1.get the userKey from SharedPreferences
+    //2.call GetUser(Key,Callback function)
+        //2.1 key => will get it from SharedPreferences
+        //2.2 callback => new instance of Callback interface , i should override the
+        //the desired method and receive the data i want!
     public void GetUser(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
         key = prefs.getString(getString(R.string.UserKeyToken), "");
+
         db.GetUser(key,new Callback(){
             @Override
             public void onCallbackCategories(ArrayList<Category> categories) {
@@ -76,52 +84,75 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCallbackUser(User user) {
-//                CurrentUser.setKey(user.getKey());
-//                CurrentUser.setName(user.getKey());
                 CurrentUser = user;
                 currentTv.setText(CurrentUser.getCurrent()+"");
             }
-
         });
     }
+
+    //Update all the user widgets
     public void UpdateUser(){
         currentTv.setText(CurrentUser.getCurrent()+"");
         System.out.println("User Should be Updated");
     }
 
+    //Show Edit Dialog for the user to update the DB
     public void EditCurrent(){
-        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        final View view = getLayoutInflater().inflate(R.layout.edit_current_layout,null);
-        builder.setTitle("كم معك بالجزدان؟");
-        builder.setView(view);
-        builder.setPositiveButton("تمام", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-              EditText editValueEt = view.findViewById(R.id.editValueEt);
-
-              User EditUser = CurrentUser;
-
-              EditUser.setCurrent(Integer.parseInt(editValueEt.getText().toString().trim()));
-              EditUser.setOldCurrent(Integer.parseInt(currentTv.getText().toString().trim()));
-
-               CurrentUser = db.UpdateUser(EditUser.getKey(),EditUser);
-               UpdateUser();
-            }
-        });
-        builder.setNegativeButton("خلص بطلت", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-//                finish();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        EditCurrentDialog(MainActivity.this);
     }
 
+    //Build and show Edit Dialog that used in EditCurrent()
+    public void EditCurrentDialog(Context context){
+        //AlertDialog bulider => is a object to build the dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        //Get the Custom layout for your dialog
+        final View layout = getLayoutInflater().inflate(R.layout.edit_current_layout,null);
+
+        //Dialog Spec
+            //1.title
+                builder.setTitle("كم معك بالجزدان؟");
+            //2.custom layout
+                builder.setView(layout);
+
+            //3.Set the Okay Button for the Dialog and it's logic
+                builder.setPositiveButton("تمام", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //get the views in the custom layout
+                        EditText editValueEt = layout.findViewById(R.id.editValueEt);
+
+                        //copy the current user to edit it
+                        User EditUser = CurrentUser;
+
+                        //Set values
+                        EditUser.setCurrent(Integer.parseInt(editValueEt.getText().toString().trim()));
+                        EditUser.setOldCurrent(Integer.parseInt(currentTv.getText().toString().trim()));
+
+                        //Update the db
+                        CurrentUser = db.UpdateUser(EditUser);
+
+                        //Update the UI
+                        UpdateUser();
+                    }
+                });
+
+                builder.setNegativeButton("خلص بطلت", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+    //Set up the Category RecyclerView
     public void CategoryRC_Setup(){
         db.GetCategories(new Callback() {
             @Override
             public void onCallbackCategories(ArrayList<Category> categories) {
+                //set the RecyclerView as horizontal list
                 LinearLayoutManager layoutManager
                         = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
                 adapter = new CategoryAdapter(MainActivity.this,categories);
