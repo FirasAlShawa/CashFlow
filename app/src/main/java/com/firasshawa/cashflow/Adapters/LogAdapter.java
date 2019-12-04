@@ -41,9 +41,22 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.Viewholder> {
         holder.date.setText(log.date);
         System.out.println(log.getNewCurrent());
         holder.oldCurrent.setText(log.oldCurrent+" - "+log.value+"\n="+log.getNewCurrent());
-        holder.value.setText("-"+log.value);
+        holder.value.setText(log.type+log.value);
         holder.category.setText(log.category);
         holder.desc.setText(log.getDesc());
+
+        switch (log.getType()){
+            case "-":
+                holder.value.setTextColor(context.getResources().getColor(R.color.Error));
+                break;
+            case "+":
+                holder.value.setTextColor(context.getResources().getColor(R.color.current));
+                break;
+            case " ":
+                holder.value.setTextColor(context.getResources().getColor(R.color.oldCurrent));
+                break;
+        }
+
     }
 
     @Override

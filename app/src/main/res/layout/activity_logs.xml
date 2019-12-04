@@ -5,18 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_gravity="center"
-    android:gravity="center"
-    android:padding="20dp"
-    tools:context=".Activities.Register">
-    <EditText
-        android:id="@+id/nameEt"
+    tools:context=".Activities.LogsActivity">
+    <TextView
+        android:layout_marginRight="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="اسمك..."/>
-    <Button
-        android:id="@+id/registerBtn"
+        android:text="سجل العمليات :"
+        android:textSize="30sp"
+        />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/LogFullRC"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="تمام"/>
+        android:layout_height="match_parent" />
+
 </LinearLayout>

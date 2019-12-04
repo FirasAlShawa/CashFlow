@@ -21,11 +21,14 @@ import com.firasshawa.cashflow.Adapters.LogAdapter;
 import com.firasshawa.cashflow.Callback;
 import com.firasshawa.cashflow.DataModels.Category;
 import com.firasshawa.cashflow.DataModels.Log;
+import com.firasshawa.cashflow.DataModels.Main;
 import com.firasshawa.cashflow.DataModels.User;
 import com.firasshawa.cashflow.Database.*;
 import com.firasshawa.cashflow.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,11 +36,15 @@ public class MainActivity extends AppCompatActivity {
     String key;
 
     RecyclerView CategoriesRC,LogRC;
-    TextView currentTv;
+    TextView currentTv,FullLogsTv;
     Button increaseBtn,editBtn,supportBtn;
 
     CategoryAdapter categoryAdapter;
     LogAdapter logAdapter;
+
+    Date date = new Date();
+    SimpleDateFormat formatDay = new SimpleDateFormat("yyyy-mm-dd");
+    SimpleDateFormat formatTime = new SimpleDateFormat("HH:MM:SS");
 
     DB db = new DB();
     @Override
@@ -51,13 +58,32 @@ public class MainActivity extends AppCompatActivity {
         increaseBtn = findViewById(R.id.increaseBtn);
         editBtn = findViewById(R.id.editBtn);
         supportBtn = findViewById(R.id.supportBtn);
-
+        FullLogsTv = findViewById(R.id.FullLogsTv);
 
 
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 EditCurrent();
+            }
+        });
+        increaseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                increaseCurrentDialog(MainActivity.this);
+            }
+        });
+        supportBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                supportCurrentDialog(MainActivity.this);
+            }
+        });
+
+        FullLogsTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this,LogsActivity.class));
             }
         });
     }
@@ -103,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
     //Update all the user widgets
     public void UpdateUser(){
         currentTv.setText(CurrentUser.getCurrent()+"");
+        System.out.println(CurrentUser);
         System.out.println("User Should be Updated");
     }
 
@@ -110,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
     public void EditCurrent(){
         EditCurrentDialog(MainActivity.this);
     }
+
+    public void increaseCurrent(){}
 
     //Build and show Edit Dialog that used in EditCurrent()
     public void EditCurrentDialog(Context context){
@@ -136,11 +165,25 @@ public class MainActivity extends AppCompatActivity {
                         User EditUser = CurrentUser;
 
                         //Set values
-                        EditUser.setCurrent(Integer.parseInt(editValueEt.getText().toString().trim()));
-                        EditUser.setOldCurrent(Integer.parseInt(currentTv.getText().toString().trim()));
+//                        EditUser.setCurrent(Integer.parseInt(editValueEt.getText().toString()));
+//                        EditUser.setOldCurrent(Integer.parseInt(currentTv.getText().toString().trim()));
+
+                        //log this operation
+                        Log log = new Log();
+                        log.setUser(CurrentUser.getName());
+                        log.setDesc("بداية نضيفه!!");
+                        log.setDate(formatDay.format(date));
+                        log.setTime(formatTime.format(date));
+                        log.setType(" ");
+                        log.setValue(Integer.parseInt(editValueEt.getText().toString()));
+                        log.setOldCurrent(Integer.parseInt(currentTv.getText().toString().trim()));
+                        log.setNewCurrent(Integer.parseInt(editValueEt.getText().toString().trim()));
+                        log.setCategory("تعديل");
+
+                        db.AddLog(log,EditUser);
 
                         //Update the db
-                        CurrentUser = db.UpdateUser(EditUser);
+//                        CurrentUser = db.UpdateUser(EditUser);
 
                         //Update the UI
                         UpdateUser();
@@ -152,6 +195,123 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                     }
                 });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+    //Build and show Edit Dialog that used in EditCurrent()
+    public void increaseCurrentDialog(Context context){
+        //AlertDialog bulider => is a object to build the dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        //Get the Custom layout for your dialog
+        final View layout = getLayoutInflater().inflate(R.layout.edit_current_layout,null);
+
+        //Dialog Spec
+        //1.title
+        builder.setTitle("كم اخدت؟");
+        //2.custom layout
+        builder.setView(layout);
+
+        //3.Set the Okay Button for the Dialog and it's logic
+        builder.setPositiveButton("تمام", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //get the views in the custom layout
+                EditText editValueEt = layout.findViewById(R.id.editValueEt);
+
+                //copy the current user to edit it
+                User EditUser = CurrentUser;
+
+                //Set values
+                EditUser.setCurrent(Integer.parseInt(editValueEt.getText().toString().trim())+EditUser.getCurrent());
+                EditUser.setOldCurrent(Integer.parseInt(currentTv.getText().toString().trim()));
+
+                //Update the db
+                CurrentUser = db.UpdateUser(EditUser);
+
+                Log log = new Log();
+                log.setUser(CurrentUser.getName());
+                log.setDesc("اخدت كاش يا بوووي!");
+                log.setDate(formatDay.format(date));
+                log.setTime(formatTime.format(date));
+                log.setType("+");
+                log.setValue(Integer.parseInt(editValueEt.getText().toString()));
+                log.setOldCurrent(0);
+                log.setNewCurrent(EditUser.getCurrent()+Integer.parseInt(editValueEt.getText().toString().trim()));
+                log.setCategory("زيادة");
+
+                db.AddLog(log,CurrentUser);
+
+                //Update the UI
+                UpdateUser();
+            }
+        });
+
+        builder.setNegativeButton("خلص بطلت", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+    //Build and show Edit Dialog that used in EditCurrent()
+    public void supportCurrentDialog(Context context){
+        //AlertDialog bulider => is a object to build the dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        //Get the Custom layout for your dialog
+        final View layout = getLayoutInflater().inflate(R.layout.edit_current_layout,null);
+
+        //Dialog Spec
+        //1.title
+        builder.setTitle("كم رح تدعم؟");
+        //2.custom layout
+        builder.setView(layout);
+
+        //3.Set the Okay Button for the Dialog and it's logic
+        builder.setPositiveButton("تمام", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //get the views in the custom layout
+                EditText editValueEt = layout.findViewById(R.id.editValueEt);
+
+                //copy the current user to edit it
+                User EditUser = CurrentUser;
+
+                //Set values
+                EditUser.setCurrent(EditUser.getCurrent()-Integer.parseInt(editValueEt.getText().toString().trim()));
+                EditUser.setOldCurrent(Integer.parseInt(currentTv.getText().toString().trim()));
+
+                //Update the db
+                CurrentUser = db.UpdateUser(EditUser);
+
+                Log log = new Log();
+                log.setUser(CurrentUser.getName());
+                log.setDesc("دعمت!");
+                log.setDate(formatDay.format(date));
+                log.setTime(formatTime.format(date));
+                log.setType("-");
+                log.setValue(Integer.parseInt(editValueEt.getText().toString()));
+                log.setOldCurrent(Integer.parseInt(currentTv.getText().toString().trim()));
+                log.setNewCurrent(EditUser.getCurrent()-Integer.parseInt(editValueEt.getText().toString().trim()));
+                log.setCategory("دعم");
+
+                db.AddLog(log,CurrentUser);
+                //Update the UI
+                UpdateUser();
+            }
+        });
+
+        builder.setNegativeButton("خلص بطلت", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
         AlertDialog dialog = builder.create();
         dialog.show();
 

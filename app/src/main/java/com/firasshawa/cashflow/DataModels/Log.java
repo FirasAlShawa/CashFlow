@@ -10,11 +10,13 @@ public class Log {
     public int value;
     public String category;
     public String desc;
+    public String type;
 
     public Log() {
     }
 
-    public Log(String key, String user, String time, String date, int oldCurrent, int newCurrent, int value, String category, String desc) {
+
+    public Log(String key, String user, String time, String date, int oldCurrent, int newCurrent, int value, String category, String desc, String type) {
         this.key = key;
         this.user = user;
         this.time = time;
@@ -24,6 +26,7 @@ public class Log {
         this.value = value;
         this.category = category;
         this.desc = desc;
+        this.type = type;
     }
 
     public String getUser() {
@@ -98,6 +101,14 @@ public class Log {
         this.desc = desc;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "Log{" +
@@ -110,6 +121,7 @@ public class Log {
                 ", value=" + value +
                 ", category='" + category + '\'' +
                 ", desc='" + desc + '\'' +
+                ", type='" + type + '\'' +
                 '}';
     }
 }

@@ -109,6 +109,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Viewho
                     log.setTime(formatTime.format(new Date()));
                     log.setOldCurrent(user.getCurrent());
                     log.setUser(user.getName());
+                    log.setType("-");
                     log.setValue(Integer.parseInt(valueEt.getText().toString()));
                     log.setNewCurrent(user.getCurrent() - Integer.parseInt(valueEt.getText().toString()));
                     if(descEt.getText().toString().length() != 0)

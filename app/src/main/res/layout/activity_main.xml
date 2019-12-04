@@ -85,6 +85,7 @@
         android:background="@color/colorPrimary"/>
 
     <TextView
+        android:id="@+id/FullLogsTv"
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

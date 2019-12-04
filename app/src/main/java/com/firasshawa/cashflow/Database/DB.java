@@ -133,8 +133,20 @@ public class DB {
 
     //Logs Functions
     public void AddLog(Log log,User user){
-        user.setOldCurrent(user.getCurrent());
-        user.setCurrent(user.getCurrent() - log.value);
+        switch (log.getType()){
+            case "-":
+                user.setOldCurrent(user.getCurrent());
+                user.setCurrent(user.getCurrent() - log.value);
+                break;
+
+            case "+":
+
+            case " ":
+                user.setOldCurrent(user.getCurrent());
+                user.setCurrent(log.value);
+                break;
+
+        }
 
         log.setKey(LogRef().push().getKey());
         LogRef().child(log.getKey()).setValue(log);
